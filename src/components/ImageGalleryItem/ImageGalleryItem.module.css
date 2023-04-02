@@ -1,0 +1,16 @@
+.item img {
+  overflow: hidden;
+  cursor: pointer;
+  scale: 1;
+  transition: all 0.5s;
+  max-height: 250px;
+}
+.item img:hover {
+  scale: 1.05;
+  transition: all 0.5s;
+}
+.item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

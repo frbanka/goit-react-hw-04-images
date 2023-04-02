@@ -7,23 +7,23 @@ class App extends Component {
   state = {
     search: '',
     page: 1,
-    imgPerPage: 0,
     totalImg: 0,
+    imgPerPage: 0,
     isLoading: false,
     modalOn: false,
-    images: null,
+    images: [],
     error: null,
     currentImgUrl: null,
     currentImgDescription: null,
   };
   searchRequest = search => {
-    this.setState({ search });
+    this.setState({ search, images: [], page: 1 });
   };
   loadMoreImg = () => {
     this.setState(({ page }) => ({ page: page + 1 }));
   };
 
-  componentDidUpdate(prevState) {
+  componentDidUpdate(prevProps, prevState) {
     const { search, page } = this.state;
 
     if (prevState.search !== search) {
@@ -31,8 +31,8 @@ class App extends Component {
 
       fetchPhotos(search)
         .then(({ hits, totalHits }) => {
-          const imagesArr = hits.map(hit => ({
-            photoId: hit.id,
+          const imagesArray = hits.map(hit => ({
+            id: hit.id,
             description: hit.tags,
             smallImage: hit.webformatURL,
             largeImage: hit.largeImageURL,
@@ -40,8 +40,8 @@ class App extends Component {
 
           return this.setState({
             page: 1,
-            images: imagesArr,
-            imgPerPage: imagesArr.length,
+            images: imagesArray,
+            imgPerPage: imagesArray.length,
             totalImg: totalHits,
           });
         })
@@ -54,19 +54,19 @@ class App extends Component {
     if (prevState.page !== page && page !== 1) {
       this.setState(({ isLoading }) => ({ isLoading: !isLoading }));
 
-      fetchImages(search, page)
+      fetchPhotos(search, page)
         .then(({ hits }) => {
-          const imagesArr = hits.map(hit => ({
-            photoId: hit.id,
+          const imagesArray = hits.map(hit => ({
+            id: hit.id,
             description: hit.tags,
-            smallImg: hit.webformatURL,
-            largeImg: hit.largeImageURL,
+            smallImage: hit.webformatURL,
+            largeImage: hit.largeImageURL,
           }));
 
           return this.setState(({ images, imgPerPage }) => {
             return {
               images: [...images, ...imagesArray],
-              imgPerPage: imgPerPage + imagesArr.length,
+              imgPerPage: imgPerPage + imagesArray.length,
             };
           });
         })
@@ -78,25 +78,17 @@ class App extends Component {
   }
 
   render() {
-    const {
-      images,
-      imgPerPage,
-      totalImg,
-      isLoading,
-      modalOn,
-      currentImUrl,
-      currentImgDescription,
-    } = this.state;
+    const { images, imgPerPage, totalImg } = this.state;
 
-    const searchRequest = this.searchRequest;
-    const loadMore = this.loadMore;
-    const openModal = this.modalOn;
+    const startSearch = this.searchRequest;
+    const loadMoreImg = this.loadMoreImg;
+
     return (
       <section>
-        <Searchbar onSubmit={searchRequest} />
+        <Searchbar onSubmit={startSearch} />
         {images && <ImageGallery images={images} />}
         {imgPerPage >= 12 && imgPerPage < totalImg && (
-          <Button loadMore={loadMore} />
+          <Button loadMore={loadMoreImg} />
         )}
       </section>
     );

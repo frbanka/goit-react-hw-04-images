@@ -26,7 +26,7 @@ class Searchbar extends Component {
     const { query } = this.state;
     return (
       <header className={css.header}>
-        <form onClick={this.onSubmit}>
+        <form onSubmit={this.onSubmitForm}>
           <input
             className={css.header__input}
             type="text"

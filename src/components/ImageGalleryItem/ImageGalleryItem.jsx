@@ -1,7 +1,14 @@
-const ImageGalleryItem = () => {
+const ImageGalleryItem = ({
+  bigImgFormat,
+  smallImgFormat,
+  photoId,
+  description,
+}) => {
   return (
     <li>
-      <img src="" alt="" />
+      <a href={bigImgFormat}>
+        <img src={smallImgFormat} alt={description} id={photoId} />
+      </a>
     </li>
   );
 };

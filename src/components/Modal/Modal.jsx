@@ -1,8 +1,8 @@
 import { createPortal } from 'react-dom';
-import { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
-const modalRoot = document.querySelector('#modal-root');
+const modalRoot = document.getElementById('modal-root');
 class Modal extends Component {
   static propsTypes = {
     modalClose: PropTypes.func.isRequired,
@@ -26,6 +26,7 @@ class Modal extends Component {
       this.props.modalClose();
     }
   };
+
   render() {
     const { children } = this.props;
     return createPortal(

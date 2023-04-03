@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
@@ -97,9 +97,11 @@ class App extends Component {
     const loadMoreImg = this.loadMoreImg;
 
     return (
-      <section>
+      <div>
         <Searchbar onSubmit={startSearch} />
-        {images && <ImageGallery images={images} />}
+        {images && (
+          <ImageGallery images={images} largeImage={this.getImageLink} />
+        )}
         {imgPerPage >= 12 && imgPerPage < totalImg && (
           <Button loadMore={loadMoreImg} />
         )}
@@ -108,7 +110,7 @@ class App extends Component {
             <img src={currentImgUrl} alt="" />
           </Modal>
         )}
-      </section>
+      </div>
     );
   }
 }

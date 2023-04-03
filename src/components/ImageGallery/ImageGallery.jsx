@@ -1,7 +1,10 @@
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
 import css from './ImageGallery.module.css';
 import PropTypes from 'prop-types';
-const ImageGallery = ({ images }) => {
+const ImageGallery = ({ images, largeImage }) => {
+  const showLargeImage = id => {
+    largeImage(id);
+  };
   return (
     <ul className={css.gallery}>
       {images.map(({ id, description, smallImage, largeImage }) => (
@@ -10,6 +13,7 @@ const ImageGallery = ({ images }) => {
           description={description}
           smallImage={smallImage}
           largeImage={largeImage}
+          showLargeImage={showLargeImage}
         />
       ))}
     </ul>

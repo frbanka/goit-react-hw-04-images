@@ -3,6 +3,7 @@ import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
 import fetchPhotos from './Fetch/Fetch';
+import Modal from './Modal/Modal';
 class App extends Component {
   state = {
     search: '',
@@ -76,9 +77,21 @@ class App extends Component {
         );
     }
   }
+  openModal = () => this.setState({ modalOn: true });
+
+  closeModal = () => this.setState({ modalOn: false });
+
+  getImageLink = id => {
+    const currentImgLink = this.state.images.find(
+      item => item.id === Number(id)
+    );
+    const bigImage = { currentImgLink };
+    this.setState({ currentImgUrl: bigImage });
+    this.openModal();
+  };
 
   render() {
-    const { images, imgPerPage, totalImg } = this.state;
+    const { images, imgPerPage, totalImg, modalOn, currentImgUrl } = this.state;
 
     const startSearch = this.searchRequest;
     const loadMoreImg = this.loadMoreImg;
@@ -89,6 +102,11 @@ class App extends Component {
         {images && <ImageGallery images={images} />}
         {imgPerPage >= 12 && imgPerPage < totalImg && (
           <Button loadMore={loadMoreImg} />
+        )}
+        {modalOn && (
+          <Modal modalClose={this.closeModal}>
+            <img src={currentImgUrl} alt="" />
+          </Modal>
         )}
       </section>
     );

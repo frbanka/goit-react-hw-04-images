@@ -29,7 +29,7 @@ class Modal extends Component {
   render() {
     const { children } = this.props;
     return createPortal(
-      <div onClick={closeOnClick}>
+      <div onClick={this.closeOnClick}>
         <div>{children}</div>
       </div>,
       modalRoot

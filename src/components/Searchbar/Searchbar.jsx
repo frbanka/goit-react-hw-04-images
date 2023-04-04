@@ -26,7 +26,7 @@ class Searchbar extends Component {
     const { query } = this.state;
     return (
       <header className={css.header}>
-        <form onSubmit={this.onSubmitForm}>
+        <form onSubmit={this.onSubmitForm} className={css.form}>
           <input
             className={css.header__input}
             type="text"
@@ -35,7 +35,7 @@ class Searchbar extends Component {
             value={query}
             onChange={this.onChangeInput}
           />
-          <button className={css.header__button} type="submit"></button>
+          <button className={css.header__button} type="submit">FIND</button>
         </form>
       </header>
     );

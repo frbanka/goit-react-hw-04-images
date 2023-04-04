@@ -1,8 +1,8 @@
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import css from './Modal.module.css';
 
-const modalRoot = document.getElementById('modal-root');
 class Modal extends Component {
   static propsTypes = {
     modalClose: PropTypes.func.isRequired,
@@ -16,13 +16,13 @@ class Modal extends Component {
   componentWillUnmount() {
     window.removeEventListener('keydown', this.whenKeyDown);
   }
-  whenKeyDown = e => {
-    if (e.code === 'Escape') {
+  whenKeyDown = event => {
+    if (event.code === 'Escape') {
       this.props.modalClose();
     }
   };
-  closeOnClick = e => {
-    if (e.target === e.currentTarget) {
+  closeOnClick = event => {
+    if (event.target === event.currentTarget) {
       this.props.modalClose();
     }
   };
@@ -30,10 +30,10 @@ class Modal extends Component {
   render() {
     const { children } = this.props;
     return createPortal(
-      <div onClick={this.closeOnClick}>
-        <div>{children}</div>
+      <div className={css.overlay} onClick={this.closeOnClick} role="presentation">
+        <div className={css.modal}>{children}</div>
       </div>,
-      modalRoot
+      document.getElementById('root')
     );
   }
 }

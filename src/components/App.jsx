@@ -4,6 +4,8 @@ import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
 import fetchPhotos from './Fetch/Fetch';
 import Modal from './Modal/Modal';
+import Loader from './Loader/Loader';
+
 class App extends Component {
   state = {
     search: '',
@@ -15,11 +17,13 @@ class App extends Component {
     images: [],
     error: null,
     currentImgUrl: null,
-    currentImgDescription: null,
+    currentImgTag: '',
   };
+
   searchRequest = search => {
     this.setState({ search, images: [], page: 1 });
   };
+
   loadMoreImg = () => {
     this.setState(({ page }) => ({ page: page + 1 }));
   };
@@ -77,41 +81,56 @@ class App extends Component {
         );
     }
   }
-  openModal = () => this.setState({ modalOn: true });
+
+  getImageLink = () => {
+    const largeImgItem = this.state.images.find(image => {
+      return image.id === this.state.currentImgId;
+    });
+    return largeImgItem;
+  };
+
+  openModal = e => {
+    const currentImgUrl = e.target.dataset.large;
+    const currentImgTag = e.target.alt;
+
+    if (e.target.nodeName === 'IMG') {
+      this.setState(({ modalOn }) => ({
+        modalOn: !modalOn,
+        currentImgUrl: currentImgUrl,
+        currentImgTag: currentImgTag,
+      }));
+    }
+  };
 
   closeModal = () => this.setState({ modalOn: false });
 
-  getImageLink = id => {
-    const currentImgLink = this.state.images.find(
-      item => item.id === Number(id)
-    );
-    const bigImage = { currentImgLink };
-    this.setState({ currentImgUrl: bigImage });
-    this.openModal();
-  };
-
   render() {
-    const { images, imgPerPage, totalImg, modalOn, currentImgUrl } = this.state;
-
-    const startSearch = this.searchRequest;
-    const loadMoreImg = this.loadMoreImg;
+    const {
+      images,
+      imgPerPage,
+      totalImg,
+      isLoading,
+      modalOn,
+      currentImgTag,
+      currentImgUrl,
+    } = this.state;
 
     return (
-      <div>
-        <Searchbar onSubmit={startSearch} />
-        {images && (
-          <ImageGallery images={images} largeImage={this.getImageLink} />
-        )}
+      <section>
+        <Searchbar onSubmit={this.searchRequest} />
+        <ImageGallery openModal={this.openModal} images={images} />
         {imgPerPage >= 12 && imgPerPage < totalImg && (
-          <Button loadMore={loadMoreImg} />
+          <Button loadMore={this.loadMoreImg} />
         )}
+        {isLoading && <Loader />}
         {modalOn && (
           <Modal modalClose={this.closeModal}>
-            <img src={currentImgUrl} alt="" />
+            <img src={currentImgUrl} alt={currentImgTag} />
           </Modal>
         )}
-      </div>
+      </section>
     );
   }
 }
+
 export default App;

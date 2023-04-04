@@ -1,5 +1,5 @@
 .header {
-  position: static;
+  position: relative;
   width: 100%;
   height: 70px;
   display: flex;
@@ -10,15 +10,26 @@
   box-shadow: 10px 5px 5px rgb(196, 133, 255);
 }
 .header__button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
-  width: 20px;
-  height: 20px;
+  width: 38px;
+  height: 28px;
   position: absolute;
-  left: 62%;
-  top: 9%;
+  left: 88%;
+  top: 4%;
+  border: none;
+  border-radius: 10%;
+  font-size: 10px;
+  color: rgb(255, 255, 255);
+  background-color: rgb(53, 53, 53);
 }
 .header__input {
   width: 320px;
   height: 28px;
   border: none;
+}
+.form {
+  position: relative;
 }

@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import css from './Searchbar.module.css';
 
@@ -35,7 +35,9 @@ class Searchbar extends Component {
             value={query}
             onChange={this.onChangeInput}
           />
-          <button className={css.header__button} type="submit">FIND</button>
+          <button className={css.header__button} type="submit">
+            FIND
+          </button>
         </form>
       </header>
     );

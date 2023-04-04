@@ -115,16 +115,21 @@ class App extends Component {
       currentImgUrl,
     } = this.state;
 
+    const searchRequest = this.searchRequest;
+    const openModal = this.openModal;
+    const closeModal = this.closeModal;
+    const loadMoreImg = this.loadMoreImg;
+
     return (
       <section>
-        <Searchbar onSubmit={this.searchRequest} />
-        <ImageGallery openModal={this.openModal} images={images} />
+        <Searchbar onSubmit={searchRequest} />
+        {images && <ImageGallery openModal={openModal} images={images} />}
         {imgPerPage >= 12 && imgPerPage < totalImg && (
-          <Button loadMore={this.loadMoreImg} />
+          <Button loadMore={loadMoreImg} />
         )}
         {isLoading && <Loader />}
         {modalOn && (
-          <Modal modalClose={this.closeModal}>
+          <Modal modalClose={closeModal}>
             <img src={currentImgUrl} alt={currentImgTag} />
           </Modal>
         )}

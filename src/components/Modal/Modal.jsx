@@ -1,6 +1,6 @@
+import React, { Component } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
 import css from './Modal.module.css';
 
 class Modal extends Component {
@@ -30,7 +30,11 @@ class Modal extends Component {
   render() {
     const { children } = this.props;
     return createPortal(
-      <div className={css.overlay} onClick={this.closeOnClick} role="presentation">
+      <div
+        className={css.overlay}
+        onClick={this.closeOnClick}
+        role="presentation"
+      >
         <div className={css.modal}>{children}</div>
       </div>,
       document.getElementById('root')

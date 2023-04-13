@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useEffect, useState } from 'react';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
@@ -6,136 +6,106 @@ import fetchPhotos from './Fetch/Fetch';
 import Modal from './Modal/Modal';
 import Loader from './Loader/Loader';
 
-class App extends Component {
-  state = {
-    search: '',
-    page: 1,
-    totalImg: 0,
-    imgPerPage: 0,
-    isLoading: false,
-    modalOn: false,
-    images: [],
-    error: null,
-    currentImgUrl: null,
-    currentImgTag: '',
+const App = () => {
+  const [modalOn, setModalOn] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+  const [search, setSearch] = useState('');
+  const [imgPerPage, setImgPerPage] = useState(0);
+  const [page, setPage] = useState(1);
+  const [error, setError] = useState(null);
+  const [images, setImages] = useState([]);
+  const [currentImgUrl, setCurrentImgUrl] = useState(null);
+  const [currentImgTag, setCurrentImgTag] = useState('');
+  const [totalImg, setTotalImg] = useState(0);
+
+  const searchRequest = search => {
+    setSearch(search);
+    setImages([]);
+    setPage(1);
   };
 
-  searchRequest = search => {
-    this.setState({ search, images: [], page: 1 });
+  const loadMoreImg = () => {
+    setPage(prevPage => prevPage + 1);
   };
 
-  loadMoreImg = () => {
-    this.setState(({ page }) => ({ page: page + 1 }));
-  };
+  useEffect(() => {
+    setLoading(true);
 
-  componentDidUpdate(prevProps, prevState) {
-    const { search, page } = this.state;
+    fetchPhotos(search)
+      .then(({ hits, totalHits }) => {
+        const imagesArray = hits.map(hit => ({
+          id: hit.id,
+          description: hit.tags,
+          smallImage: hit.webformatURL,
+          largeImage: hit.largeImageURL,
+        }));
 
-    if (prevState.search !== search) {
-      this.setState(({ isLoading }) => ({ isLoading: !isLoading }));
-
-      fetchPhotos(search)
-        .then(({ hits, totalHits }) => {
-          const imagesArray = hits.map(hit => ({
-            id: hit.id,
-            description: hit.tags,
-            smallImage: hit.webformatURL,
-            largeImage: hit.largeImageURL,
-          }));
-
-          return this.setState({
-            page: 1,
-            images: imagesArray,
-            imgPerPage: imagesArray.length,
-            totalImg: totalHits,
-          });
-        })
-        .catch(error => this.setState({ error }))
-        .finally(() =>
-          this.setState(({ isLoading }) => ({ isLoading: !isLoading }))
+        return (
+          setPage(1),
+          setImages(imagesArray),
+          setImgPerPage(imagesArray.length),
+          setTotalImg(prevHits => prevHits + totalHits)
         );
-    }
+      })
+      .catch(error => setError(error))
+      .finally(() => setLoading(false));
+  }, [search]);
 
-    if (prevState.page !== page && page !== 1) {
-      this.setState(({ isLoading }) => ({ isLoading: !isLoading }));
-
+  useEffect(() => {
+    if (page > 1) {
       fetchPhotos(search, page)
         .then(({ hits }) => {
-          const imagesArray = hits.map(hit => ({
+          const newImagesArray = hits.map(hit => ({
             id: hit.id,
             description: hit.tags,
             smallImage: hit.webformatURL,
             largeImage: hit.largeImageURL,
           }));
 
-          return this.setState(({ images, imgPerPage }) => {
-            return {
-              images: [...images, ...imagesArray],
-              imgPerPage: imgPerPage + imagesArray.length,
-            };
-          });
+          return (
+            setImages(prevImages => [...prevImages, ...newImagesArray]),
+            setImgPerPage(
+              prevImgPerPage => prevImgPerPage + newImagesArray.length
+            )
+          );
         })
-        .catch(error => this.setState({ error }))
-        .finally(() =>
-          this.setState(({ isLoading }) => ({ isLoading: !isLoading }))
-        );
+        .catch(error => setError(error))
+        .finally(() => setLoading(false));
     }
-  }
+  }, [search, page]);
 
-  getImageLink = () => {
-    const largeImgItem = this.state.images.find(image => {
-      return image.id === this.state.currentImgId;
+  const getImageLink = () => {
+    const largeImgItem = images.find(image => {
+      return image.id === currentImgId;
     });
     return largeImgItem;
   };
 
-  openModal = e => {
-    const currentImgUrl = e.target.dataset.large;
-    const currentImgTag = e.target.alt;
-
+  const openModal = e => {
+    setCurrentImgUrl(e.target.dataset.large);
+    setCurrentImgTag(e.target.alt);
     if (e.target.nodeName === 'IMG') {
-      this.setState(({ modalOn }) => ({
-        modalOn: !modalOn,
-        currentImgUrl: currentImgUrl,
-        currentImgTag: currentImgTag,
-      }));
+      setModalOn(true);
     }
   };
 
-  closeModal = () => this.setState({ modalOn: false });
+  const closeModal = () => setModalOn(false);
 
-  render() {
-    const {
-      images,
-      imgPerPage,
-      totalImg,
-      isLoading,
-      modalOn,
-      currentImgTag,
-      currentImgUrl,
-    } = this.state;
-
-    const searchRequest = this.searchRequest;
-    const openModal = this.openModal;
-    const closeModal = this.closeModal;
-    const loadMoreImg = this.loadMoreImg;
-
-    return (
-      <section>
-        <Searchbar onSubmit={searchRequest} />
-        {images && <ImageGallery openModal={openModal} images={images} />}
-        {imgPerPage >= 12 && imgPerPage < totalImg && (
-          <Button loadMore={loadMoreImg} />
-        )}
-        {isLoading && <Loader />}
-        {modalOn && (
-          <Modal modalClose={closeModal}>
-            <img src={currentImgUrl} alt={currentImgTag} />
-          </Modal>
-        )}
-      </section>
-    );
-  }
-}
+  return (
+    <section>
+      <Searchbar onSubmit={searchRequest} />
+      {images && <ImageGallery openModal={openModal} images={images} />}
+      {imgPerPage >= 12 && imgPerPage < totalImg && (
+        <Button loadMore={loadMoreImg} />
+      )}
+      {isLoading === true && <Loader />}
+      {modalOn && (
+        <Modal modalClose={closeModal}>
+          <img src={currentImgUrl} alt={currentImgTag} />
+        </Modal>
+      )}
+    </section>
+  );
+};
 
 export default App;

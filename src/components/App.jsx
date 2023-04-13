@@ -74,12 +74,6 @@ const App = () => {
     }
   }, [search, page]);
 
-  const getImageLink = () => {
-    const largeImgItem = images.find(image => {
-      return image.id === currentImgId;
-    });
-    return largeImgItem;
-  };
 
   const openModal = e => {
     setCurrentImgUrl(e.target.dataset.large);

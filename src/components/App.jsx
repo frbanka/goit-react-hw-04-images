@@ -12,7 +12,6 @@ const App = () => {
   const [search, setSearch] = useState('');
   const [imgPerPage, setImgPerPage] = useState(0);
   const [page, setPage] = useState(1);
-  const [error, setError] = useState(null);
   const [images, setImages] = useState([]);
   const [currentImgUrl, setCurrentImgUrl] = useState(null);
   const [currentImgTag, setCurrentImgTag] = useState('');
@@ -47,7 +46,7 @@ const App = () => {
           setTotalImg(prevHits => prevHits + totalHits)
         );
       })
-      .catch(error => setError(error))
+      .catch(error => console.log(error))
       .finally(() => setLoading(false));
   }, [search]);
 
@@ -69,11 +68,10 @@ const App = () => {
             )
           );
         })
-        .catch(error => setError(error))
+        .catch(error => console.log(error))
         .finally(() => setLoading(false));
     }
   }, [search, page]);
-
 
   const openModal = e => {
     setCurrentImgUrl(e.target.dataset.large);
